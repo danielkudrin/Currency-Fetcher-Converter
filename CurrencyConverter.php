@@ -19,7 +19,7 @@ class CurrencyConverter
             return round($this->calculateCurrencyConversion($amount, $currencyConversionRate), $roundPrecision);
         }
 
-        return false;
+        throw new Exception('Could not convert currency... Something is wrong with your currencyConversionRates...' . PHP_EOL);
     }
 
     private function getCurrencyConversionRate(string $currencyName)
