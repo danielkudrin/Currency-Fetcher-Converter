@@ -8,7 +8,7 @@ class CurrencyConverter
 
     public function __construct(CurrencyFetcherInterface $currencyConversionRates)
     {
-        $this->currencyConversionRates = $currencyConversionRates;
+        $this->currencyConversionRates = $currencyConversionRates->getCurrencyConversionRates();
     }
 
     public function convertCurrencyToBase(int $amount, string $currencyName, int $roundPrecision)
@@ -26,14 +26,14 @@ class CurrencyConverter
     {
         $currencyName = strtoupper($currencyName);
 
-        if (property_exists($this->currencyConversionRates, $currencyName))
+        if ($this->currencyConversionRates)
         {
             return $this->currencyConversionRates->$currencyName;
         }
         throw new Exception('Object currencyConversionRates not found!');
     }
 
-    private function calculateCurrencyConversion(int $amount, CurrencyFetcherInterface $currencyConversionRate) {
+    private function calculateCurrencyConversion(int $amount, string $currencyConversionRate) {
         return ($amount / $currencyConversionRate);
     }
 }
