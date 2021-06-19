@@ -11,7 +11,7 @@ class CurrencyFetcher implements CurrencyFetcherInterface
 
     public function __construct(string $apiKey, string $baseCurrencyName)
     {
-        $this->currencyConversionRates = $this->getCurrencyConversionRates($apiKey, $baseCurrencyName);
+        $this->setCurrencyConversionRates($apiKey, $baseCurrencyName);
     }
 
     public function storeCurrencyConversionRatesToFile(string $fileName)
@@ -38,23 +38,37 @@ class CurrencyFetcher implements CurrencyFetcherInterface
         }
     }
 
-    private function getCurrencyConversionRates(string $apiKey, string $baseCurrencyName)
+    public function setCurrencyConversionRates(string $apiKey, string $baseCurrencyName)
     {
-        $baseCurrencyName = strtoupper($baseCurrencyName);
+        if (!$this->currencyConversionRates) {
+            $baseCurrencyName = strtoupper($baseCurrencyName);
 
-        $req_url = "https://v6.exchangerate-api.com/v6/{$apiKey}/latest/{$baseCurrencyName}";
-        $response_json = file_get_contents($req_url);
+            $req_url = "https://v6.exchangerate-api.com/v6/{$apiKey}/latest/{$baseCurrencyName}";
+            $response_json = file_get_contents($req_url);
 
-        if($response_json !== false) {
-            try {
-                $response = json_decode($response_json);
+            if($response_json !== false) {
+                try {
+                    $response = json_decode($response_json);
 
-                if('success' === $response->result) {
-                    return $response->conversion_rates;
+                    if('success' === $response->result) {
+                        $this->currencyConversionRates = $response->conversion_rates;
+                        return true;
+                    }
+                } catch(Exception $e) {
+                    throw new Exception(sprintf('Could not fetch the desired data... %s', $e->getMessage()));
                 }
-            } catch(Exception $e) {
-                throw new Exception(sprintf('Could not fetch the desired data... %s', $e->getMessage()));
             }
+        } else {
+            $this->getCurrencyConversionRates();
+        }
+    }
+
+    public function getCurrencyConversionRates()
+    {
+        if ($this->currencyConversionRates) {
+            return $this->currencyConversionRates;
+        } else {
+            return false;
         }
     }
 
