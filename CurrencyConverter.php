@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 class CurrencyConverter
 {
-    private CurrencyFetcher $currencyConversionRates;
+    private CurrencyFetcherInterface $currencyConversionRates;
 
-    public function __construct(CurrencyFetcher $currencyConversionRates)
+    public function __construct(CurrencyFetcherInterface $currencyConversionRates)
     {
         $this->currencyConversionRates = $currencyConversionRates;
     }
@@ -33,7 +33,7 @@ class CurrencyConverter
         throw new Exception('Object currencyConversionRates not found!');
     }
 
-    private function calculateCurrencyConversion(int $amount, CurrencyFetcher $currencyConversionRate) {
+    private function calculateCurrencyConversion(int $amount, CurrencyFetcherInterface $currencyConversionRate) {
         return ($amount / $currencyConversionRate);
     }
 }
